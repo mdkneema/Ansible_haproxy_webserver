@@ -1,0 +1,28 @@
+- hosts: lb
+  vars:
+  - port_no: 8080  #port number as configured in web.yml
+  
+  tasks:
+    - name: 
+      package:
+        name: "haproxy"
+        state: present
+
+    - template:
+        src: "/root/task-12/haproxy.cfg"
+        dest: "/etc/haproxy/haproxy.cfg"
+      register: x
+
+    - firewalld:
+        state: disabled
+        permanent: yes
+        immediate: yes
+      ignore_errors: yes
+    
+    - service:
+        name: "haproxy"
+        state: restarted
+        when: x.changed == true
+
+
+       
